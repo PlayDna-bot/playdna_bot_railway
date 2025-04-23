@@ -20,12 +20,18 @@ async def start_cmd(message: types.Message):
 
 @dp.message_handler(commands=["get_id"])
 async def get_id(message: types.Message):
-    await message.answer(f"🆔 Ваш ID: `{message.from_user.id}`\n👤 Username: @{message.from_user.username}", parse_mode="Markdown")
+    await message.answer(
+        f"🆔 Ваш ID: `{message.from_user.id}`\n👤 Username: @{message.from_user.username}", 
+        parse_mode="Markdown"
+    )
 
 @dp.message_handler(lambda m: m.from_user.id in user_data and not user_data[m.from_user.id].get("format"))
 async def get_format(message: types.Message):
     user_data[message.from_user.id]["format"] = message.text
-    await message.answer("📎 Пришли ссылку на видео (YouTube, VK, Google Диск):", reply_markup=types.ReplyKeyboardRemove())
+    await message.answer(
+        "📎 Пришли ссылку на видео (YouTube, VK, Google Диск):",
+        reply_markup=types.ReplyKeyboardRemove()
+    )
 
 @dp.message_handler(lambda m: m.from_user.id in user_data and not user_data[m.from_user.id].get("video"))
 async def get_video(message: types.Message):
@@ -42,26 +48,28 @@ async def get_contact(message: types.Message):
     user_data[message.from_user.id]["contact"] = message.text
     user = message.from_user
     data = user_data[user.id]
+    
+    # Исправленная секция с текстом
     admin_msg = (
-        "📥 *Новая заявка!*
-"
-        f"🔹 Формат: {data['format']}
-"
-        f"🔗 Видео: {data['video']}
-"
-        f"🎽 Игрок: {data['player_info']}
-"
-        f"📞 Контакт: {data['contact']}
-
-"
-        f"👤 Отправитель: @{user.username}
-"
-        f"🆔 ID: `{user.id}`
-"
+        f"📥 *Новая заявка!*\n"
+        f"🔹 Формат: {data['format']}\n"
+        f"🔗 Видео: {data['video']}\n"
+        f"🎽 Игрок: {data['player_info']}\n"
+        f"📞 Контакт: {data['contact']}\n\n"
+        f"👤 Отправитель: @{user.username}\n"
+        f"🆔 ID: `{user.id}`\n"
         f"🏷 Имя: {user.full_name}"
     )
-    await bot.send_message(chat_id=ADMIN_CHAT_ID, text=admin_msg, parse_mode="Markdown")
-    await message.answer("✅ Готово! Ваша заявка отправлена аналитикам.", reply_markup=types.ReplyKeyboardRemove())
+    
+    await bot.send_message(
+        chat_id=ADMIN_CHAT_ID,
+        text=admin_msg,
+        parse_mode="Markdown"
+    )
+    await message.answer(
+        "✅ Готово! Ваша заявка отправлена аналитикам.", 
+        reply_markup=types.ReplyKeyboardRemove()
+    )
     user_data.pop(user.id)
 
 if __name__ == "__main__":
