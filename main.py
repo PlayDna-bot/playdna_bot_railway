@@ -1,0 +1,63 @@
+from aiogram import Bot, Dispatcher, executor, types
+
+API_TOKEN = "7680517671:AAHRTvxhvuvlEctp8j55KTpxZX_y47SlBGM"
+ADMIN_CHAT_ID = 220564316
+
+bot = Bot(token=API_TOKEN)
+dp = Dispatcher(bot)
+user_data = {}
+
+@dp.message_handler(commands=["start"])
+async def start_cmd(message: types.Message):
+    user_data[message.from_user.id] = {}
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add("Mini", "Full", "Pro", "Ultra")
+    await message.answer(
+        "👋 Привет! Это бот PlayDNA.\nВыбери формат отчёта:",
+        reply_markup=keyboard
+    )
+
+@dp.message_handler(commands=["get_id"])
+async def get_id(message: types.Message):
+    await message.answer(
+        f"🆔 Ваш ID: `{message.from_user.id}`\n"
+        f"👤 Username: @{message.from_user.username}",
+        parse_mode="Markdown"
+    )
+
+@dp.message_handler(lambda m: m.from_user.id in user_data and not user_data[m.from_user.id].get("format"))
+async def get_format(message: types.Message):
+    user_data[message.from_user.id]["format"] = message.text
+    await message.answer("📎 Пришли ссылку на видео:", reply_markup=types.ReplyKeyboardRemove())
+
+@dp.message_handler(lambda m: m.from_user.id in user_data and not user_data[m.from_user.id].get("video"))
+async def get_video(message: types.Message):
+    user_data[message.from_user.id]["video"] = message.text
+    await message.answer("🎽 Укажи номер игрока и позицию:")
+
+@dp.message_handler(lambda m: m.from_user.id in user_data and not user_data[m.from_user.id].get("player_info"))
+async def get_player_info(message: types.Message):
+    user_data[message.from_user.id]["player_info"] = message.text
+    await message.answer("📞 Твой контакт для связи:")
+
+@dp.message_handler(lambda m: m.from_user.id in user_data and not user_data[m.from_user.id].get("contact"))
+async def get_contact(message: types.Message):
+    user_data[message.from_user.id]["contact"] = message.text
+    user = message.from_user
+    data = user_data[user.id]
+    admin_msg = (
+        "📥 *Новая заявка!*\n"
+        f"🔹 Формат: {data['format']}\n"
+        f"🔗 Видео: {data['video']}\n"
+        f"🎽 Игрок: {data['player_info']}\n"
+        f"📞 Контакт: {data['contact']}\n\n"
+        f"👤 Отправитель: @{user.username}\n"
+        f"🆔 ID: `{user.id}`\n"
+        f"🏷 Имя: {user.full_name}"
+    )
+    await bot.send_message(chat_id=ADMIN_CHAT_ID, text=admin_msg, parse_mode="Markdown")
+    await message.answer("✅ Готово! Ваша заявка отправлена аналитикам.", reply_markup=types.ReplyKeyboardRemove())
+    user_data.pop(user.id)
+
+if __name__ == "__main__":
+    executor.start_polling(dp, skip_updates=True)
