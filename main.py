@@ -18,8 +18,7 @@ async def start_cmd(message: types.Message):
     keyboard.add("Mini", "Full", "Pro", "Ultra")
 
     await message.answer(
-        "👋 Привет! Это бот PlayDNA.
-Выбери формат отчёта:",
+        "👋 Привет! Это бот PlayDNA.\nВыбери формат отчёта:",
         reply_markup=keyboard
     )
 
@@ -52,21 +51,13 @@ async def get_contact(message: types.Message):
     d = user_data[u.id]
 
     admin_msg = (
-        f"📥 *Новая заявка!*
-"
-        f"🔹 Формат: {d['format']}
-"
-        f"🔗 Видео: {d['video']}
-"
-        f"🎽 Игрок: {d['player_info']}
-"
-        f"📞 Контакт: {d['contact']}
-
-"
-        f"👤 Отправитель: @{u.username}
-"
-        f"🆔 ID: `{u.id}`
-"
+        f"📥 *Новая заявка!*\n"
+        f"🔹 Формат: {d['format']}\n"
+        f"🔗 Видео: {d['video']}\n"
+        f"🎽 Игрок: {d['player_info']}\n"
+        f"📞 Контакт: {d['contact']}\n\n"
+        f"👤 Отправитель: @{u.username}\n"
+        f"🆔 ID: `{u.id}`\n"
         f"🏷 Имя: {u.full_name}"
     )
 
@@ -75,11 +66,12 @@ async def get_contact(message: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add("/start")
 
-    await message.answer("✅ Готово! Ваша заявка отправлена аналитикам.
-Хотите отправить ещё одну?", reply_markup=keyboard)
+    await message.answer(
+        "✅ Готово! Ваша заявка отправлена аналитикам.\nХотите отправить ещё одну?", 
+        reply_markup=keyboard
+    )
 
     user_data.pop(u.id)
 
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True)
-
