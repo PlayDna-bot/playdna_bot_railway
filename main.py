@@ -1,4 +1,3 @@
-
 from aiogram import Bot, Dispatcher, executor, types
 import logging
 
@@ -6,6 +5,7 @@ API_TOKEN = "7680517671:AAHRTvxhvuvlEctp8j55KTpxZX_y47SlBGM"
 ADMIN_CHAT_ID = 220564316
 
 logging.basicConfig(level=logging.INFO)
+
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 user_data = {}
@@ -62,9 +62,7 @@ async def get_contact(message: types.Message):
     )
     await bot.send_message(chat_id=ADMIN_CHAT_ID, text=admin_msg, parse_mode="Markdown")
     await message.answer("✅ Готово! Ваша заявка отправлена аналитикам.", reply_markup=types.ReplyKeyboardRemove())
-    logging.info(f"Заявка от {user.id} отправлена администратору")
     user_data.pop(user.id)
 
 if __name__ == "__main__":
-    logging.info("Бот запущен...")
     executor.start_polling(dp, skip_updates=True)
